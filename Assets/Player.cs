@@ -22,9 +22,11 @@ public class Player : MonoBehaviour
    [SerializeField] private Vector2 wallJumpForce;
    private bool isWallJumping;
    
-   [Header("Buffer Jump")]
+   [Header("Buffer Jump && Coyote Jump")]
    [SerializeField] private float bufferJumpWindow = 0.25f;
-   public float bufferJumpPressed = -1;
+   public float bufferJumpActivated = -1;
+   [SerializeField] private float coyoteJumpWindow = 0.5f;
+   private float coyoteJumpActivated = -1;
 
    [Header("Knockback")]
    [SerializeField] private float knockbackDuration = 1;
@@ -97,21 +99,29 @@ public class Player : MonoBehaviour
     private void RequestBufferJump()
     {
         if (isAirborne)
-            bufferJumpPressed = Time.time;
+            bufferJumpActivated = Time.time;
     }
 
     private void AttemptBufferJump()
     {
-        if (Time.time - bufferJumpPressed <= bufferJumpWindow)
+        if (Time.time - bufferJumpActivated <= bufferJumpWindow)
         {
-            bufferJumpPressed = 0;
+            bufferJumpActivated = Time.time -1;
             Jump();
         }
     }
+
+    private void ActivateCoyoteJump() => coyoteJumpActivated = Time.time;
+    private void CanclelCoyoteJump() => coyoteJumpActivated =Time.time -1;
+    
     private void JumpButton()
     {
-        if (isGrounded)
+        bool coyoteJumpAvailable = Time.time - coyoteJumpActivated <= coyoteJumpWindow;
+        if (isGrounded || coyoteJumpAvailable)
         {
+            if (coyoteJumpAvailable)
+                {Debug.Log("Coyote Jump");}
+            
             Jump();
         }
         else if (isWallDetected && !isGrounded)
@@ -122,6 +132,7 @@ public class Player : MonoBehaviour
         {
             DoubleJump();
         }
+        CanclelCoyoteJump();
     }
     private void Jump()
     {
@@ -213,6 +224,11 @@ public class Player : MonoBehaviour
     private void BecomeAirborne()
     {
         isAirborne = true;
+        if (rb.linearVelocity.y < 0)
+        { 
+            ActivateCoyoteJump();
+            //Debug.Log("Coyote Jump Activated");
+        }
     }
 
     private void OnDrawGizmos()
