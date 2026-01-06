@@ -22,6 +22,10 @@ public class Player : MonoBehaviour
    [SerializeField] private Vector2 wallJumpForce;
    private bool isWallJumping;
    
+   [Header("Buffer Jump")]
+   [SerializeField] private float bufferJumpWindow = 0.25f;
+   public float bufferJumpPressed = -1;
+
    [Header("Knockback")]
    [SerializeField] private float knockbackDuration = 1;
    [SerializeField] private Vector2 knockbackPower;
@@ -86,6 +90,22 @@ public class Player : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space))
         {
             JumpButton();
+            RequestBufferJump();
+        }
+    }
+
+    private void RequestBufferJump()
+    {
+        if (isAirborne)
+            bufferJumpPressed = Time.time;
+    }
+
+    private void AttemptBufferJump()
+    {
+        if (Time.time - bufferJumpPressed <= bufferJumpWindow)
+        {
+            bufferJumpPressed = 0;
+            Jump();
         }
     }
     private void JumpButton()
@@ -188,6 +208,7 @@ public class Player : MonoBehaviour
     {
         isAirborne = false;
         canDoubleJump = true;
+        AttemptBufferJump();
     }
     private void BecomeAirborne()
     {
