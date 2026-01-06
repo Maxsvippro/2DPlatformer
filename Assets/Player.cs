@@ -32,7 +32,7 @@ public class Player : MonoBehaviour
    [SerializeField] private float knockbackDuration = 1;
    [SerializeField] private Vector2 knockbackPower;
    private bool isKnockbacked;
-   private bool canBeKnockbacked;
+   //private bool canBeKnockbacked;
    private float xInput;
    private float yInput;
    private bool facingRight = true;
@@ -77,10 +77,10 @@ public class Player : MonoBehaviour
 
     private IEnumerator KnockbackRoutine()
     {
-        canBeKnockbacked = false;
+        //canBeKnockbacked = false;
         isKnockbacked = true;
         yield return new WaitForSeconds(knockbackDuration);
-        canBeKnockbacked = true;
+        //canBeKnockbacked = true;
         isKnockbacked = false;
     }
     private void HandleWallSlide()
@@ -124,6 +124,7 @@ public class Player : MonoBehaviour
     private void ActivateCoyoteJump() => coyoteJumpActivated = Time.time;
     private void CanclelCoyoteJump() => coyoteJumpActivated =Time.time -1;
     #endregion
+    #region  
     private void JumpButton()
     {
         bool coyoteJumpAvailable = Time.time - coyoteJumpActivated <= coyoteJumpWindow;
@@ -165,7 +166,7 @@ public class Player : MonoBehaviour
         yield return new WaitForSeconds(wallJumpDuration);
         isWallJumping = false;
     }
-
+#endregion
     private void HandleColision()
     {
         isGrounded = Physics2D.Raycast(transform.position, Vector2.down, groundCheckDistance, LayerMask.GetMask("Ground"));
@@ -236,5 +237,4 @@ public class Player : MonoBehaviour
         Gizmos.DrawLine(transform.position, new Vector2(transform.position.x, transform.position.y - groundCheckDistance));
         Gizmos.DrawLine(transform.position, new Vector2(transform.position.x + (wallCheckDistance * facingDirection), transform.position.y));
     }   
-}
-    
+} 
