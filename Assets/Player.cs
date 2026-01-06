@@ -2,20 +2,37 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using NUnit.Framework;
+using UnityEditor.Tilemaps;
 using UnityEngine;
 
 public class Player : MonoBehaviour
 {
    private Rigidbody2D rb;
    private Animator anim;
+   
+   [Header("Movement")]
    [SerializeField] private float moveSpeed;    
    [SerializeField] private float jumpForce;
    [SerializeField] private float doubleJumpForce;
    public bool canDoubleJump;
+
+   [Header("Wall Jump")]
+   [SerializeField] private float wallJumpDuration = 0.65f;
+   [SerializeField] private Vector2 wallJumpForce;
+   private bool isWallJumping;
+   
+   [Header("Knockback")]
+   [SerializeField] private float knockbackDuration = 1;
+   [SerializeField] private Vector2 knockbackPower;
+   private bool isKnockbacked;
+   private bool canBeKnockbacked;
    private float xInput;
    private float yInput;
    private bool facingRight = true;
-   private int facingDirection = 1;
+   private int facingDirection = 1; 
+   
+   [Header("Collision")]
    [SerializeField] private float groundCheckDistance;
    [SerializeField] private float wallCheckDistance;
     private bool isGrounded;
@@ -28,6 +45,12 @@ public class Player : MonoBehaviour
     }
     private void Update()
     {
+        if (Input.GetKeyDown(KeyCode.K))
+        {
+            Knockback();
+        }
+        if (isKnockbacked)
+            return;
         HandleInput();
         HandleColision();
         UpdateAirBorneStatus();
@@ -37,6 +60,14 @@ public class Player : MonoBehaviour
         HandleAnimation();
     }
 
+    public void Knockback()
+    {
+        if (isKnockbacked)
+            return;
+        StartCoroutine(KnockbackRoutine());
+        anim.SetTrigger("knockback");
+        rb.linearVelocity = new Vector2(knockbackPower.x * -facingDirection, knockbackPower.y);
+    }
     private void HandleWallSlide()
     {
         bool canWallSlide = isWallDetected && rb.linearVelocity.y < 0; //&& xInput * facingDirection >= 0;
@@ -63,6 +94,10 @@ public class Player : MonoBehaviour
         {
             Jump();
         }
+        else if (isWallDetected && !isGrounded)
+        {
+            WallJump();
+        }
         else if (canDoubleJump)
         {
             DoubleJump();
@@ -73,12 +108,34 @@ public class Player : MonoBehaviour
         rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
     }
     private void DoubleJump()
-    {
+    {   
+        isWallJumping = false;
         rb.linearVelocity = new Vector2(rb.linearVelocity.x, doubleJumpForce);
         canDoubleJump = false;
     }
-    
+    private void WallJump()
+    {
+        canDoubleJump = true;
+        rb.linearVelocity = new Vector2(wallJumpForce.x * -facingDirection, wallJumpForce.y);
+        Flip();
+        StopAllCoroutines();
+        StartCoroutine(WallJumpRoutine());
+    }
+    private IEnumerator WallJumpRoutine()
+    {   
+        isWallJumping = true;
+        yield return new WaitForSeconds(wallJumpDuration);
+        isWallJumping = false;
+    }
 
+    private IEnumerator KnockbackRoutine()
+    {
+        canBeKnockbacked = false;
+        isKnockbacked = true;
+        yield return new WaitForSeconds(knockbackDuration);
+        canBeKnockbacked = true;
+        isKnockbacked = false;
+    }
     private void HandleColision()
     {
         isGrounded = Physics2D.Raycast(transform.position, Vector2.down, groundCheckDistance, LayerMask.GetMask("Ground"));
@@ -97,6 +154,8 @@ public class Player : MonoBehaviour
     {
         if (isWallDetected && xInput * facingDirection > 0)
         return;
+        if (isWallJumping)
+        return;
 
         rb.linearVelocity = new Vector2(xInput * moveSpeed, rb.linearVelocity.y);
     }
@@ -104,11 +163,11 @@ public class Player : MonoBehaviour
     {
         if (rb.linearVelocity.x <0 && facingRight || rb.linearVelocity.x >0 && !facingRight)
         {
-            Filp();
+            Flip();
         }
     }
 
-    private void Filp()
+    private void Flip()
     {
         facingDirection *= -1;
         transform.Rotate(0,180,0);
@@ -140,11 +199,6 @@ public class Player : MonoBehaviour
         Gizmos.color = Color.red;
         Gizmos.DrawLine(transform.position, new Vector2(transform.position.x, transform.position.y - groundCheckDistance));
         Gizmos.DrawLine(transform.position, new Vector2(transform.position.x + (wallCheckDistance * facingDirection), transform.position.y));
-    }
-    //test code
-    private void DuaDam()
-    {
-        Console.WriteLine("Dua dam");
-    }
+    }   
 }
     
