@@ -27,18 +27,18 @@ public class Player : MonoBehaviour
     }
     private void Update()
     {
-        UpdateAirBorneStatus();
         HandleInput();
+        HandleColision();
+        UpdateAirBorneStatus();
         HandleWallSlide();
         HandleMovement();
         HandleFlip();
-        HandleColision();
         HandleAnimation();
     }
 
     private void HandleWallSlide()
     {
-        bool canWallSlide = isWallDetected && rb.linearVelocity.y < 0;
+        bool canWallSlide = isWallDetected && rb.linearVelocity.y < 0; //&& xInput * facingDirection >= 0;
         float yModifer = yInput <0 ? 1 : 0.5f;
         if (canWallSlide == false)
             return;
@@ -94,8 +94,8 @@ public class Player : MonoBehaviour
 
     private void HandleMovement()
     {
-        if (isWallDetected)
-            return;
+        if (isWallDetected && xInput * facingDirection > 0)
+        return;
 
         rb.linearVelocity = new Vector2(xInput * moveSpeed, rb.linearVelocity.y);
     }
