@@ -142,7 +142,7 @@ public class Player : MonoBehaviour
         Gizmos.DrawLine(transform.position, new Vector2(transform.position.x + (wallCheckDistance * facingDirection), transform.position.y));
     }
     //test code
-    private void Dua dam()
+    private void DuaDam()
     {
         Console.WriteLine("Dua dam");
     }
