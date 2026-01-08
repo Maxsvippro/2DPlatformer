@@ -48,13 +48,10 @@ public class Player : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponentInChildren<Animator>();
+        //GameManager.Instance = this;
     }
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.K))
-        {
-            Knockback();
-        }
         if (isKnockbacked)
             return;
         HandleInput();
@@ -236,5 +233,5 @@ public class Player : MonoBehaviour
         Gizmos.color = Color.red;
         Gizmos.DrawLine(transform.position, new Vector2(transform.position.x, transform.position.y - groundCheckDistance));
         Gizmos.DrawLine(transform.position, new Vector2(transform.position.x + (wallCheckDistance * facingDirection), transform.position.y));
-    }   
+    }
 } 
