@@ -6,6 +6,8 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
     public Player player;
+    public bool fruitHaveRandomLook;
+    public int fruitCollected;
     private void Awake()
     {   
         if (Instance == null)
@@ -13,4 +15,11 @@ public class GameManager : MonoBehaviour
         else
             Destroy(gameObject);
     }
+
+    public void AddFruit()
+    {
+        fruitCollected++;
+        Debug.Log("Fruits Collected: " + fruitCollected);
+    }
+    public bool FruitHaveRandomLook() => fruitHaveRandomLook;
 }
