@@ -31,6 +31,9 @@ public class Player : MonoBehaviour
    [Header("Knockback")]
    [SerializeField] private float knockbackDuration = 1;
    [SerializeField] private Vector2 knockbackPower;
+
+   [Header("VFX")]
+   [SerializeField] private GameObject deathVFX;
    private bool isKnockbacked;
    //private bool canBeKnockbacked;
    private float xInput;
@@ -63,7 +66,11 @@ public class Player : MonoBehaviour
         HandleAnimation();
     }
 
-    public void Die() => Destroy(gameObject);
+    public void Die()
+    {
+        GameObject newVFX = Instantiate(deathVFX, transform.position, Quaternion.identity);
+        Destroy(gameObject);
+    }
     public void Knockback()
     {
         if (isKnockbacked)
