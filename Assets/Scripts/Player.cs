@@ -63,6 +63,7 @@ public class Player : MonoBehaviour
         HandleAnimation();
     }
 
+    public void Die() => Destroy(gameObject);
     public void Knockback()
     {
         if (isKnockbacked)
