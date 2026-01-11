@@ -8,7 +8,7 @@ public class GameManager : MonoBehaviour
     
     [Header("Player")]
     [SerializeField]private GameObject playerPrefab;
-    [SerializeField] private Transform playerRespawnPoint;
+    [SerializeField] private Transform respawnPoint;
     [SerializeField] private float respawnDelay;
     public Player player;
     
@@ -21,6 +21,11 @@ public class GameManager : MonoBehaviour
         else
             Destroy(gameObject);
     }
+
+    public void UpdateRespawnPosition(Transform newRespawnPoint)
+    {
+        respawnPoint = newRespawnPoint;
+    }
     public void RespawnPlayer()
     {
         StartCoroutine(RespawnPlayerCoroutine());
@@ -30,7 +35,7 @@ public class GameManager : MonoBehaviour
     {
         yield return new WaitForSeconds(respawnDelay);
         
-        GameObject newPlayer = Instantiate(playerPrefab, playerRespawnPoint.position, Quaternion.identity);
+        GameObject newPlayer = Instantiate(playerPrefab, respawnPoint.position, Quaternion.identity);
         player = newPlayer.GetComponent<Player>();
     }
 
