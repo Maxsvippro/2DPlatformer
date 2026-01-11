@@ -5,7 +5,13 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
+    
+    [Header("Player")]
+    [SerializeField]private GameObject playerPrefab;
+    [SerializeField] private Transform playerRespawnPoint;
+    [SerializeField] private float respawnDelay;
     public Player player;
+    
     public bool fruitHaveRandomLook;
     public int fruitCollected;
     private void Awake()
@@ -14,6 +20,18 @@ public class GameManager : MonoBehaviour
             Instance = this;
         else
             Destroy(gameObject);
+    }
+    public void RespawnPlayer()
+    {
+        StartCoroutine(RespawnPlayerCoroutine());
+    }
+
+    private IEnumerator RespawnPlayerCoroutine()
+    {
+        yield return new WaitForSeconds(respawnDelay);
+        
+        GameObject newPlayer = Instantiate(playerPrefab, playerRespawnPoint.position, Quaternion.identity);
+        player = newPlayer.GetComponent<Player>();
     }
 
     public void AddFruit()
