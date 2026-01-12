@@ -225,14 +225,30 @@ public class Player : MonoBehaviour
 
         rb.linearVelocity = new Vector2(xInput * moveSpeed, rb.linearVelocity.y);
     }
-    private void HandleFlip()
+   
+       private void HandleFlip()
     {
-        if (rb.linearVelocity.x <0 && facingRight || rb.linearVelocity.x >0 && !facingRight)
+        if (isWallJumping) return;
+
+        if (Mathf.Abs(xInput) > 0)
         {
-            Flip();
+            if (xInput < 0 && facingRight || xInput > 0 && !facingRight)
+            {
+                Flip();
+            }
+        }
+        else 
+        { 
+            if (Mathf.Abs(rb.linearVelocity.x) > 0.1f && !isWallDetected)
+            {
+                if (rb.linearVelocity.x < 0 && facingRight || rb.linearVelocity.x > 0 && !facingRight)
+                {
+                    Flip();
+                }
+            }
         }
     }
-
+    
     private void Flip()
     {
         facingDirection *= -1;
