@@ -323,8 +323,10 @@ MonoBehaviour:
   respawnPoint: {fileID: 646737546}
   respawnDelay: 2
   player: {fileID: 1216414020}
-  fruitHaveRandomLook: 0
+  fruitAreRandom: 0
   fruitCollected: 0
+  totalFruits: 0
+  canReactivate: 0
 --- !u!4 &226362705
 Transform:
   m_ObjectHideFlags: 0

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -12,14 +13,30 @@ public class GameManager : MonoBehaviour
     [SerializeField] private float respawnDelay;
     public Player player;
     
-    public bool fruitHaveRandomLook;
+    public bool fruitAreRandom;
     public int fruitCollected;
+    public int totalFruits;
+
+    [Header("Checkpoints")]
+    public bool canReactivate;
+    
     private void Awake()
     {   
         if (Instance == null)
             Instance = this;
         else
             Destroy(gameObject);
+    }
+
+    private void Start()
+    {
+        CollectFruitsInfo();
+    }
+
+    private void CollectFruitsInfo()
+    {
+        Fruits[] allFruit = FindObjectsByType<Fruits>(FindObjectsSortMode.None);
+        totalFruits = allFruit.Length;
     }
 
     public void UpdateRespawnPosition(Transform newRespawnPoint)
@@ -44,5 +61,5 @@ public class GameManager : MonoBehaviour
         fruitCollected++;
         Debug.Log("Fruits Collected: " + fruitCollected);
     }
-    public bool FruitHaveRandomLook() => fruitHaveRandomLook;
+    public bool FruitHaveRandomLook() => fruitAreRandom;
 }

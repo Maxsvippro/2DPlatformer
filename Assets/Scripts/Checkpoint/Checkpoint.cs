@@ -10,6 +10,10 @@ public class Checkpoint : MonoBehaviour
     {
         anim = GetComponent<Animator>();
     }
+    private void Update()
+    {
+        canBeActivited = GameManager.Instance.canReactivate;
+    }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
