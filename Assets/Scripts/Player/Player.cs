@@ -106,7 +106,6 @@ public class Player : MonoBehaviour
         if (isKnockbacked)
             return;
         StartCoroutine(KnockbackRoutine());
-        anim.SetTrigger("knockback");
         rb.linearVelocity = new Vector2(knockbackPower.x * -facingDirection, knockbackPower.y);
     }
 
@@ -114,9 +113,13 @@ public class Player : MonoBehaviour
     {
         //canBeKnockbacked = false;
         isKnockbacked = true;
+        anim.SetBool("IsKnocked", true);
+
         yield return new WaitForSeconds(knockbackDuration);
+
         //canBeKnockbacked = true;
         isKnockbacked = false;
+        anim.SetBool("IsKnocked", false);
     }
     private void HandleWallSlide()
     {
