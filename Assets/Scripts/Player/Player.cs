@@ -66,7 +66,11 @@ public class Player : MonoBehaviour
     private void Update()
     {
         if (canBeControlled == false)
+        {
+            HandleColision();
+            HandleAnimation();
             return;
+        }
 
         if (isKnockbacked)
             return;
@@ -100,6 +104,22 @@ public class Player : MonoBehaviour
     {
         GameObject newVFX = Instantiate(deathVFX, transform.position, Quaternion.identity);
         Destroy(gameObject);
+    }
+
+    public void Push(Vector2 direction, float duration = 0)
+    {
+        StartCoroutine(PushCoroutine(direction, duration));
+    }
+
+    private IEnumerator PushCoroutine(Vector2 direction, float duration)
+    {
+        canBeControlled = false;
+
+        rb.linearVelocity = Vector2.zero;
+        rb.AddForce(direction, ForceMode2D.Impulse);
+        yield return new WaitForSeconds(duration);
+        
+        canBeControlled = true;
     }
     public void Knockback(float sourceDamageXPosition)
     {   
