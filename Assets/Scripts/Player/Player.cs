@@ -101,12 +101,16 @@ public class Player : MonoBehaviour
         GameObject newVFX = Instantiate(deathVFX, transform.position, Quaternion.identity);
         Destroy(gameObject);
     }
-    public void Knockback()
-    {
+    public void Knockback(float sourceDamageXPosition)
+    {   
+        float knockbackDirection = 1;
+        if (transform.position.x < sourceDamageXPosition)
+            knockbackDirection = -1;
+
         if (isKnockbacked)
             return;
         StartCoroutine(KnockbackRoutine());
-        rb.linearVelocity = new Vector2(knockbackPower.x * -facingDirection, knockbackPower.y);
+        rb.linearVelocity = new Vector2(knockbackPower.x * knockbackDirection, knockbackPower.y);
     }
 
     private IEnumerator KnockbackRoutine()
