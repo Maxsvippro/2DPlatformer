@@ -1,7 +1,7 @@
 using UnityEngine;
 
 public class Trap_Trampoline : MonoBehaviour
-{    private Animator anim;
+{   protected Animator anim;
     [SerializeField] private float pushPower;
     [SerializeField] private float duration = 0.5f;
 
