@@ -12,9 +12,14 @@ public class Trap_FallingPlatform : MonoBehaviour
     [SerializeField] private float travelDistance;
     public Vector3[] wayPoints;
     private int wayPointsIndex;
-    public bool canMove;
+    private bool canMove = false;
 
     [Header("PlatformFall Details")]
+    [SerializeField] private float impactSpeed = 3;
+    [SerializeField] private float impactDuration = 0.1f;
+    private float impactTimer;
+    private bool impactHappened;
+    [Space]
     [SerializeField] private float fallDelay = 0.5f;
 
     private void Awake()
@@ -28,8 +33,13 @@ public class Trap_FallingPlatform : MonoBehaviour
     {
         wayPointsIndex = 0;
         SetupWayPoint();
+        Invoke(nameof(ActivatePlatform), Random.Range(0f, 0.5f));
     }
 
+    private void ActivatePlatform()
+    {
+        canMove = true;
+    }
     private void SetupWayPoint()
     {
         wayPoints = new  Vector3[2];
@@ -41,6 +51,7 @@ public class Trap_FallingPlatform : MonoBehaviour
     private void Update()
     {
         HandleMovement();
+        HandleImpact();
     }
 
     private void HandleMovement()
@@ -72,12 +83,25 @@ public class Trap_FallingPlatform : MonoBehaviour
         // }
     }
 
+    private void HandleImpact()
+    {
+        if (impactTimer < 0)
+            return;
+        impactTimer -= Time.deltaTime;
+        Debug.Log("Move platform");
+        transform.position = Vector2.MoveTowards(transform.position, transform.position + (Vector3.down *10), impactSpeed * Time.deltaTime);
+    }
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
+        if (impactHappened)
+            return;
         Player player = collision.gameObject.GetComponent<Player>();
         if (player != null)
         {
-            Invoke("FallPlatform", fallDelay);
+            Invoke(nameof(FallPlatform), fallDelay);
+            impactTimer = impactDuration;
+            impactHappened = true;
         }
     }
 
