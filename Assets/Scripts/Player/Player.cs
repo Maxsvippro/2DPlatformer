@@ -253,7 +253,7 @@ public class Player : MonoBehaviour
         rb.linearVelocity = new Vector2(xInput * moveSpeed, rb.linearVelocity.y);
     }
    
-       private void HandleFlip()
+    private void HandleFlip()
     {
         if (isWallJumping) return;
 
