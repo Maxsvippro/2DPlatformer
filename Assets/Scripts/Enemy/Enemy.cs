@@ -1,12 +1,24 @@
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
     protected Animator anim;
     protected Rigidbody2D rb;
-    [SerializeField] protected float moveSpeed;
-    [SerializeField] protected float idleDuration;
+
+    [SerializeField]protected GameObject damageTrigger;
+    [Space]
+
+    [SerializeField] protected float moveSpeed = 2f;
+    [SerializeField] protected float idleDuration = 1.5f;
     protected float idleTimer;
+
+    [Header("Death details")]
+    [SerializeField] private float deathImpactSpeed = 5;
+    [SerializeField] private float deathRotationSpeed =  150;
+    private int deathRotationDirection = 1;
+    protected bool isDead;
+
 
     [Header("Basic collision settings")] 
     [SerializeField] protected float groundCheckDistance = 1.1f;
@@ -29,9 +41,28 @@ public class Enemy : MonoBehaviour
     protected virtual void Update()
     {
         idleTimer -= Time.deltaTime;
+
+        if (isDead)
+        {
+            HandleDeathRotation();
+        }
     }
-    
-    protected virtual void HandleColision()
+
+    public virtual void Die()
+    {
+        damageTrigger.SetActive(false);
+        anim.SetTrigger("hit");
+        rb.linearVelocity = new Vector2(rb.linearVelocity.x, deathImpactSpeed);
+        isDead = true;
+
+        if (Random.Range(0, 100) < 50)
+            deathRotationDirection = deathRotationDirection * -1;
+    }
+    private void HandleDeathRotation()
+    {
+        transform.Rotate(0, 0, (deathRotationSpeed * deathRotationDirection) * Time.deltaTime); 
+    }
+    protected virtual void HandleCollision()
     {
         isGrounded = Physics2D.Raycast(transform.position, Vector2.down, groundCheckDistance, whatIsGround);
         isGroundInFrontDetected = Physics2D.Raycast(groundCheck.position, Vector2.down, groundCheckDistance, LayerMask.GetMask("Ground"));

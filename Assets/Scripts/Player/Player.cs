@@ -48,6 +48,10 @@ public class Player : MonoBehaviour
    [Header("Collision")]
    [SerializeField] private float groundCheckDistance;
    [SerializeField] private float wallCheckDistance;
+   [Space]
+   [SerializeField] private Transform enemyCheck;
+   [SerializeField] private float enemyCheckRadius;
+   [SerializeField] private LayerMask whatIsEnemy;
     private bool isGrounded;
     private bool isAirborne;
     private bool isWallDetected;
@@ -75,6 +79,8 @@ public class Player : MonoBehaviour
         if (isKnockbacked)
             return;
 
+        HandleEnemyDetection();
+
         HandleInput();
         HandleColision();
         UpdateAirBorneStatus();
@@ -84,6 +90,21 @@ public class Player : MonoBehaviour
         HandleAnimation();
     }
 
+    private void HandleEnemyDetection()
+    {
+        if (rb.linearVelocity.y >= 0)
+            return;
+        Collider2D[] colider = Physics2D.OverlapCircleAll(enemyCheck.position, enemyCheckRadius, whatIsEnemy);
+        foreach (var enemy in colider)
+        {
+            Enemy newEnemy = enemy.GetComponent<Enemy>();
+            if (newEnemy != null)
+            {
+                newEnemy.Die();
+                Jump();
+            }
+        }
+    }
     public void RespawnFinished(bool finished)
     {
         if (finished)
@@ -312,6 +333,7 @@ public class Player : MonoBehaviour
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(enemyCheck.position,enemyCheckRadius);
         Gizmos.DrawLine(transform.position, new Vector2(transform.position.x, transform.position.y - groundCheckDistance));
         Gizmos.DrawLine(transform.position, new Vector2(transform.position.x + (wallCheckDistance * facingDirection), transform.position.y));
     }
